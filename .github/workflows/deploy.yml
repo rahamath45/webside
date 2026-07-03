@@ -1,0 +1,27 @@
+name: Deploy to L40 Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 103.42.51.87
+          username: aditi
+          port: 2200
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /home/aditi/webside
+            git pull origin main
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            npm install
+            npm run build
+            pm2 restart webside || PORT=3001 pm2 start npm --name "webside" -- start
