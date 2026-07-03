@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "name": "Admin User",
+    "email": "admin@certin-ican.in",
+    "password": "$2b$12$sDCoT.xU0UxxaBdEuNggwOOz1NjRZOhajaqe0qZ/aG6pa9wQPcH6u"
+  },
+  {
+    "id": "2",
+    "name": "Rahmath Sulaiman",
+    "email": "rahmathsulaiman45@gmail.com",
+    "password": "$2b$12$sDCoT.xU0UxxaBdEuNggwOOz1NjRZOhajaqe0qZ/aG6pa9wQPcH6u"
+  },
+  {
+    "id": "3",
+    "name": "thameemans18",
+    "email": "thameemans18@gmail.com",
+    "password": "$2b$12$EnIDsvL8u1f6Bt8c2SbOU.J8loBdbyGUSdTl0C0xVWl/7L8qFQiCS"
+  },
+  {
+    "id": "4",
+    "name": "thameemans186",
+    "email": "thameemans186@gmail.com",
+    "password": "$2b$12$0TApbLc/bM.75/VyysesnOh8Gic9w2NIxY6Ab3gfrepsOqnniFdyy"
+  },
+  {
+    "id": "5",
+    "name": "evaluator.test2026",
+    "email": "evaluator.test2026@gmail.com",
+    "password": "$2b$12$WHFUpcCXNJrPzkzz2rrE8.qMsi7zheF.LrcOss65rKX0/drvhGidS"
+  },
+  {
+    "id": "6",
+    "name": "admin",
+    "email": "admin@example.com",
+    "password": "$2b$12$svjZuXUkyUezvAvzM4HV/eq93to2QCZd98CXhTinxa/jOImb0MJN6"
+  }
+]
