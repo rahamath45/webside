@@ -1,4 +1,5 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
@@ -11,6 +12,10 @@ function getUsers() {
 
 export const authOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    }),
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
@@ -28,25 +33,13 @@ export const authOptions = {
         );
 
         if (!user) {
-          // Auto-register new user
-          const hashedPassword = await bcrypt.hash(credentials.password, 12);
-          const newUser = {
-            id: String(users.length + 1),
-            name: credentials.email.split('@')[0],
-            email: credentials.email.toLowerCase(),
-            password: hashedPassword,
-          };
-          users.push(newUser);
+          throw new Error('Invalid credentials');
+        }
 
-          const filePath = path.join(process.cwd(), 'data', 'users.json');
-          fs.writeFileSync(filePath, JSON.stringify(users, null, 2), 'utf-8');
-          user = newUser;
-        } else {
-          // Verify existing user password
-          const isValid = await bcrypt.compare(credentials.password, user.password);
-          if (!isValid) {
-            throw new Error('Invalid password');
-          }
+        // Verify existing user password
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) {
+          throw new Error('Invalid credentials');
         }
 
         return {

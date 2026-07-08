@@ -223,8 +223,10 @@ export default function ApplyPage() {
 
   // Autoscroll chat history
   useEffect(() => {
-    if (chatAreaRef.current) {
-      chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+    if (chatEndRef.current) {
+      setTimeout(() => {
+        chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
   }, [currentStep, answers, viewSummary]);
 
@@ -608,7 +610,7 @@ export default function ApplyPage() {
                   Summary
                 </button>
                 <button className="btn btn-primary" style={styles.sendBtn} onClick={handleNext}>
-                  Send
+                  Next
                 </button>
               </div>
             </div>

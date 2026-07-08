@@ -34,5 +34,17 @@
     "name": "admin",
     "email": "admin@example.com",
     "password": "$2b$12$svjZuXUkyUezvAvzM4HV/eq93to2QCZd98CXhTinxa/jOImb0MJN6"
+  },
+  {
+    "id": "7",
+    "name": "Test User",
+    "email": "testnewuser@example.com",
+    "password": "$2b$12$Tkl0Avpa75mj6cH2aJVRCO3Qec/7SXKuAdVunKpJ9gwxIIki9DB32"
+  },
+  {
+    "id": "8",
+    "name": "gef",
+    "email": "vftsay@fquajbqu",
+    "password": "$2b$12$qXPME0JOnv1bID8NtJe.0umjE6aatATFcBlt7tzZO0FrHEKStWF2."
   }
 ]

@@ -106,10 +106,6 @@ export default function LandingPage() {
               </div>
               <div style={styles.heroDivider} />
               <div style={styles.heroLogoWrapper}>
-                <img src="/logos/ican-logo.png" alt="ICAN" style={{ height: '62px', width: 'auto', objectFit: 'contain' }} />
-              </div>
-              <div style={styles.heroDivider} />
-              <div style={styles.heroLogoWrapper}>
                 <img src="/logos/itel-logo.png" alt="ITEL" style={{ height: '66px', width: 'auto', objectFit: 'contain' }} />
               </div>
             </div>
@@ -246,7 +242,6 @@ export default function LandingPage() {
         <div className="container" style={styles.footerInner}>
           <div style={styles.footerLogos}>
             <img src="/logos/certin-logo.png" alt="CERT-In" style={{ ...styles.footerLogoImg, height: '44px' }} />
-            <img src="/logos/ican-logo.png" alt="ICAN" style={{ ...styles.footerLogoImg, height: '44px' }} />
             <img src="/logos/itel-logo.png" alt="ITEL" style={{ ...styles.footerLogoImg, height: '54px' }} />
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
