@@ -229,7 +229,7 @@ export default function LandingPage() {
             </p>
             <button className="btn btn-primary btn-lg" onClick={() => router.push('/login')} id="cta-apply-btn">
               <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                Apply Now — It&apos;s Free {icons.arrowRight(18)}
+                Apply Now {icons.arrowRight(18)}
               </span>
             </button>
           </div>
