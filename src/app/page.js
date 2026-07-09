@@ -164,7 +164,6 @@ export default function LandingPage() {
               {[
                 { num: '20', label: 'Evaluation Criteria' },
                 { num: '16', label: 'Product Categories' },
-                { num: '3', label: 'Partner Organizations' },
                 { num: '∞', label: 'Opportunities' },
               ].map((s, i) => (
                 <div key={i} className="glass-card" style={styles.statCard}>
@@ -358,7 +357,7 @@ const styles = {
     display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3xl)', alignItems: 'center',
   },
   aboutText: { color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 'var(--space-md)', fontSize: '1rem' },
-  statsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' },
+  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 'var(--space-md)' },
   statCard: { padding: 'var(--space-lg)', textAlign: 'center' },
   statNum: { display: 'block', fontFamily: 'var(--font-display)', fontSize: '2.2rem', fontWeight: 800 },
   statLabel: { display: 'block', color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem' },

@@ -138,7 +138,7 @@ export default function LoginPage() {
           style={styles.googleBtn}
         >
           {googleLoading ? (
-             <span style={{...styles.spinner, borderColor: 'rgba(0,0,0,0.1)', borderTopColor: '#000'}} />
+             <span style={{...styles.spinner, borderColor: 'rgba(255,255,255,0.1)', borderTopColor: '#fff'}} />
           ) : (
             <>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -174,16 +174,19 @@ const styles = {
     alignItems: 'center', 
     justifyContent: 'center',
     padding: '1rem',
-    background: '#f9fafb',
+    background: 'var(--bg-primary)',
     fontFamily: 'var(--font-primary), sans-serif',
   },
   card: {
     width: '100%', 
     maxWidth: '420px', 
-    background: '#ffffff',
+    background: 'var(--bg-card)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    border: '1px solid var(--border-color)',
     padding: '2.5rem',
     borderRadius: '24px',
-    boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.08)',
+    boxShadow: 'var(--shadow-md)',
     display: 'flex',
     flexDirection: 'column',
   },
@@ -195,7 +198,7 @@ const styles = {
   logoBox: {
     width: '48px',
     height: '48px',
-    background: '#8b5cf6',
+    background: 'var(--accent-indigo)',
     borderRadius: '12px',
     display: 'flex',
     alignItems: 'center',
@@ -207,13 +210,13 @@ const styles = {
   title: {
     fontSize: '1.35rem',
     fontWeight: '700',
-    color: '#111827',
+    color: 'var(--text-primary)',
     textAlign: 'center',
     margin: '0 0 0.25rem 0',
   },
   subtitle: {
     fontSize: '0.85rem',
-    color: '#6b7280',
+    color: 'var(--text-secondary)',
     textAlign: 'center',
     margin: '0 0 1.5rem 0',
   },
@@ -222,8 +225,8 @@ const styles = {
     alignItems: 'center',
     gap: '0.5rem',
     padding: '0.75rem',
-    background: '#fef2f2',
-    border: '1px solid #fecaca',
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.25)',
     borderRadius: '8px',
     marginBottom: '1.25rem',
   },
@@ -249,9 +252,9 @@ const styles = {
     width: '100%',
     padding: '0.75rem 1rem 0.75rem 2.5rem',
     fontSize: '0.95rem',
-    color: '#111827',
-    background: '#ffffff',
-    border: '1px solid #d1d5db',
+    color: 'var(--text-primary)',
+    background: 'rgba(255, 255, 255, 0.04)',
+    border: '1px solid var(--border-color)',
     borderRadius: '10px',
     outline: 'none',
     transition: 'border-color 0.2s',
@@ -259,7 +262,7 @@ const styles = {
   submitBtn: {
     width: '100%',
     padding: '0.85rem',
-    background: '#0f172a',
+    background: 'var(--gradient-primary)',
     color: '#ffffff',
     border: 'none',
     borderRadius: '10px',
@@ -282,14 +285,14 @@ const styles = {
   },
   signupText: {
     fontSize: '0.85rem',
-    color: '#6b7280',
+    color: 'var(--text-secondary)',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '1.5rem',
   },
   signupLink: {
-    color: '#8b5cf6',
+    color: 'var(--accent-indigo)',
     fontWeight: '600',
     textDecoration: 'none',
   },
@@ -301,21 +304,21 @@ const styles = {
   dividerLine: {
     flex: 1,
     height: '1px',
-    background: '#e5e7eb',
+    background: 'var(--border-color)',
   },
   dividerText: {
     padding: '0 1rem',
     fontSize: '0.75rem',
-    color: '#9ca3af',
+    color: 'var(--text-muted)',
     fontWeight: '600',
     letterSpacing: '0.05em',
   },
   googleBtn: {
     width: '100%',
     padding: '0.85rem',
-    background: '#ffffff',
-    color: '#374151',
-    border: '1px solid #d1d5db',
+    background: 'rgba(255, 255, 255, 0.02)',
+    color: 'var(--text-primary)',
+    border: '1px solid var(--border-color)',
     borderRadius: '10px',
     fontSize: '0.95rem',
     fontWeight: '600',
@@ -325,11 +328,11 @@ const styles = {
     justifyContent: 'center',
     gap: '0.75rem',
     marginBottom: '1.5rem',
-    transition: 'background 0.2s',
+    transition: 'background 0.2s, border-color 0.2s',
   },
   footerNote: {
     fontSize: '0.75rem',
-    color: '#9ca3af',
+    color: 'var(--text-muted)',
     textAlign: 'center',
     margin: 0,
     lineHeight: '1.5',
@@ -337,7 +340,7 @@ const styles = {
   bottomFooter: {
     marginTop: '1.5rem',
     fontSize: '0.8rem',
-    color: '#9ca3af',
+    color: 'var(--text-muted)',
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem',
