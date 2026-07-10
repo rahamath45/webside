@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
+import { hashPassword } from '@/lib/password';
 import pool from '@/lib/db';
 
 export async function POST(request) {
@@ -27,7 +27,7 @@ export async function POST(request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await hashPassword(password);
 
     // Insert new user — parameterized query.
     // Special characters in name/email (like @, ', ", OR 1=1) are stored as-is

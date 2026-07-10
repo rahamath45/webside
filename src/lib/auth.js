@@ -1,6 +1,6 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import bcrypt from 'bcryptjs';
+import { verifyPassword } from '@/lib/password';
 import pool from '@/lib/db';
 
 export const authOptions = {
@@ -33,8 +33,8 @@ export const authOptions = {
           throw new Error('Invalid credentials');
         }
 
-        // Verify existing user password
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        // Verify existing user password — uses Node.js crypto (scrypt + timingSafeEqual)
+        const isValid = await verifyPassword(credentials.password, user.password);
         if (!isValid) {
           throw new Error('Invalid credentials');
         }
