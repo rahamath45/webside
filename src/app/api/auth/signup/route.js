@@ -1,17 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import fs from 'fs';
-import path from 'path';
-
-function getUsers() {
-  const filePath = path.join(process.cwd(), 'data', 'users.json');
-  try {
-    const data = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    return [];
-  }
-}
+import pool from '@/lib/db';
 
 export async function POST(request) {
   try {
@@ -24,12 +13,14 @@ export async function POST(request) {
       );
     }
 
-    const users = getUsers();
-    const existingUser = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase()
+    // Check if email already exists — parameterized query prevents SQL injection.
+    // Even if email = "' OR 1=1 --", it is treated as plain text by PostgreSQL.
+    const { rows: existing } = await pool.query(
+      'SELECT id FROM users WHERE LOWER(email) = LOWER($1)',
+      [email]
     );
 
-    if (existingUser) {
+    if (existing.length > 0) {
       return NextResponse.json(
         { message: 'Email is already registered' },
         { status: 409 }
@@ -37,22 +28,14 @@ export async function POST(request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = {
-      id: String(users.length > 0 ? Math.max(...users.map(u => parseInt(u.id) || 0)) + 1 : 1),
-      name: name,
-      email: email.toLowerCase(),
-      password: hashedPassword,
-    };
-    
-    users.push(newUser);
 
-    const filePath = path.join(process.cwd(), 'data', 'users.json');
-    // Ensure directory exists
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(filePath, JSON.stringify(users, null, 2), 'utf-8');
+    // Insert new user — parameterized query.
+    // Special characters in name/email (like @, ', ", OR 1=1) are stored as-is
+    // without any risk of SQL injection.
+    await pool.query(
+      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',
+      [name, email.toLowerCase(), hashedPassword]
+    );
 
     return NextResponse.json(
       { message: 'User created successfully' },

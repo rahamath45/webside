@@ -1,14 +1,7 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
-import fs from 'fs';
-import path from 'path';
-
-function getUsers() {
-  const filePath = path.join(process.cwd(), 'data', 'users.json');
-  const data = fs.readFileSync(filePath, 'utf-8');
-  return JSON.parse(data);
-}
+import pool from '@/lib/db';
 
 export const authOptions = {
   providers: [
@@ -27,10 +20,14 @@ export const authOptions = {
           throw new Error('Please enter email and password');
         }
 
-        const users = getUsers();
-        let user = users.find(
-          (u) => u.email.toLowerCase() === credentials.email.toLowerCase()
+        // Parameterized query — prevents SQL injection.
+        // Even if email = "' OR 1=1 --", PostgreSQL treats it as literal text.
+        const { rows } = await pool.query(
+          'SELECT id, name, email, password FROM users WHERE LOWER(email) = LOWER($1)',
+          [credentials.email]
         );
+
+        const user = rows[0];
 
         if (!user) {
           throw new Error('Invalid credentials');
@@ -43,7 +40,7 @@ export const authOptions = {
         }
 
         return {
-          id: user.id,
+          id: String(user.id),
           name: user.name,
           email: user.email,
         };
