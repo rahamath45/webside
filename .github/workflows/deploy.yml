@@ -20,11 +20,12 @@ jobs:
           script: |
             cd /home/aditi/webside
 
-            # Start PostgreSQL if not already running
+            # Pull latest changes FIRST so docker-compose.yml is updated
+            git pull origin main
+
+            # Start PostgreSQL with updated docker-compose.yml
             docker compose up -d db
             sleep 3
-
-            git pull origin main
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             npm install
