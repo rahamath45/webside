@@ -4,6 +4,16 @@ import { authOptions } from '@/lib/auth';
 import { generatePDF } from '@/lib/pdf-generator';
 import { sendReportEmail } from '@/lib/email-sender';
 import pool from '@/lib/db';
+import { submitRateLimiter } from '@/lib/rate-limit';
+import {
+  isValidString,
+  validateAndSanitize,
+  FIELD_LIMITS,
+  REQUIRED_APPLICATION_FIELDS,
+} from '@/lib/sanitize';
+
+// Global lock map for preventing concurrent submissions (Finding 6)
+const submissionLocks = new Map();
 
 /**
  * POST /api/submit-application
@@ -12,7 +22,18 @@ import pool from '@/lib/db';
  * generates a PDF, and emails it to the Admin.
  */
 export async function POST(request) {
+  let lockKey = null;
+
   try {
+    // Finding 13: Strictly validate Content-Type header
+    const contentType = request.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      return NextResponse.json(
+        { error: 'Unsupported Media Type: Only application/json is allowed' },
+        { status: 415 }
+      );
+    }
+
     // 1. Verify user session
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -22,37 +43,116 @@ export async function POST(request) {
       );
     }
 
+    // Rate Limiting (Finding 4)
+    const rateLimit = submitRateLimiter.check(session.user.email);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many submissions. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000) } }
+      );
+    }
+
     // 2. Parse payload
     const payload = await request.json();
     console.log('[API Submit] Received application from user:', session.user.email);
 
-    // 3. Map fields to report data
+    // Type Confusion check (Finding 8, 12):
+    // Validate that the payload is a plain object (not array, null, etc.)
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return NextResponse.json(
+        { error: 'Invalid request body: expected a JSON object' },
+        { status: 400 }
+      );
+    }
+
+    // Required Field Validation (Finding 10):
+    // Reject empty body or missing required fields. Empty strings and whitespace-only are rejected.
+    const missingFields = [];
+    for (const field of REQUIRED_APPLICATION_FIELDS) {
+      if (!isValidString(payload[field])) {
+        missingFields.push(field);
+      }
+    }
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        { error: `Missing or empty required fields: ${missingFields.join(', ')}. Please fill in all required information.` },
+        { status: 400 }
+      );
+    }
+
+    // Input Length Validation + XSS Sanitization (Finding 7, 9, 12):
+    // Validate, sanitize, and enforce length limits on every application field.
+    const applicationFields = [
+      'organizationName', 'contactPersonName', 'contactEmail',
+      'productName', 'productCategory', 'deploymentModel',
+      'briefDescription', 'keyFeatures', 'indigenousContent',
+      'ipOwnership', 'foreignComponents', 'sbomAvailability',
+      'sbomFormat', 'pocAvailability', 'awards', 'benchmarking',
+      'deployments', 'aiAssessment', 'rvdPolicy',
+    ];
+
+    const sanitizedPayload = {};
+    for (const field of applicationFields) {
+      const rawValue = payload[field];
+
+      // Type check: reject non-string types (Finding 8, 12)
+      if (rawValue !== undefined && rawValue !== null && typeof rawValue !== 'string') {
+        return NextResponse.json(
+          { error: `Field '${field}' must be a string` },
+          { status: 400 }
+        );
+      }
+
+      const value = typeof rawValue === 'string' ? rawValue : '';
+      const limit = FIELD_LIMITS[field] || 5000;
+      const check = validateAndSanitize(value, limit);
+
+      if (!check.valid) {
+        return NextResponse.json(
+          { error: `Field '${field}' ${check.error}` },
+          { status: 400 }
+        );
+      }
+
+      sanitizedPayload[field] = check.sanitized;
+    }
+
+    // In-memory lock to prevent race conditions (Finding 6)
+    lockKey = `${session.user.email}-${sanitizedPayload.productName}`;
+    if (submissionLocks.has(lockKey)) {
+      return NextResponse.json(
+        { error: 'A submission for this product is currently processing. Please wait.' },
+        { status: 409 }
+      );
+    }
+    submissionLocks.set(lockKey, true);
+
+    // 3. Map fields to report data (using sanitized values — Finding 7)
     const reportData = {
-      email: session.user.email || payload.email || '',
-      organizationName: payload.organizationName || '',
-      contactPersonName: payload.contactPersonName || '',
-      contactEmail: payload.contactEmail || session.user.email || '',
-      productName: payload.productName || '',
-      productCategory: payload.productCategory || '',
-      deploymentModel: payload.deploymentModel || '',
-      briefDescription: payload.briefDescription || '',
-      keyFeatures: payload.keyFeatures || '',
-      indigenousContent: payload.indigenousContent || '',
-      ipOwnership: payload.ipOwnership || '',
-      foreignComponents: payload.foreignComponents || '',
-      sbomAvailability: payload.sbomAvailability || '',
-      sbomFormat: payload.sbomFormat || '',
-      pocAvailability: payload.pocAvailability || '',
-      awards: payload.awards || '',
-      benchmarking: payload.benchmarking || '',
-      deployments: payload.deployments || '',
-      aiAssessment: payload.aiAssessment || '',
-      rvdPolicy: payload.rvdPolicy || '',
+      email: session.user.email || '',
+      organizationName: sanitizedPayload.organizationName,
+      contactPersonName: sanitizedPayload.contactPersonName,
+      contactEmail: sanitizedPayload.contactEmail || session.user.email || '',
+      productName: sanitizedPayload.productName,
+      productCategory: sanitizedPayload.productCategory,
+      deploymentModel: sanitizedPayload.deploymentModel,
+      briefDescription: sanitizedPayload.briefDescription,
+      keyFeatures: sanitizedPayload.keyFeatures,
+      indigenousContent: sanitizedPayload.indigenousContent,
+      ipOwnership: sanitizedPayload.ipOwnership,
+      foreignComponents: sanitizedPayload.foreignComponents,
+      sbomAvailability: sanitizedPayload.sbomAvailability,
+      sbomFormat: sanitizedPayload.sbomFormat,
+      pocAvailability: sanitizedPayload.pocAvailability,
+      awards: sanitizedPayload.awards,
+      benchmarking: sanitizedPayload.benchmarking,
+      deployments: sanitizedPayload.deployments,
+      aiAssessment: sanitizedPayload.aiAssessment,
+      rvdPolicy: sanitizedPayload.rvdPolicy,
     };
 
     // 4. Save all 20 answers to PostgreSQL
-    // Parameterized query — all special characters (@, ', ", OR 1=1, --, etc.)
-    // are treated as plain text. No SQL injection possible.
+    // Parameterized query — all special characters are treated as plain text.
     console.log('[API Submit] Saving application to database...');
 
     // Look up the user_id from the users table
@@ -61,6 +161,22 @@ export async function POST(request) {
       [session.user.email]
     );
     const userId = userRows.length > 0 ? userRows[0].id : null;
+
+    // Check for existing duplicate application in the database (Finding 6)
+    if (userId) {
+      const { rows: existingApps } = await pool.query(
+        'SELECT id FROM applications WHERE user_id = $1 AND product_name = $2',
+        [userId, reportData.productName]
+      );
+      
+      if (existingApps.length > 0) {
+        submissionLocks.delete(lockKey);
+        return NextResponse.json(
+          { error: 'You have already submitted an application for this product.' },
+          { status: 409 }
+        );
+      }
+    }
 
     await pool.query(
       `INSERT INTO applications (
@@ -107,8 +223,7 @@ export async function POST(request) {
     // 6. Send email to Administrator (fire-and-forget for fast response)
     const adminEmail = process.env.ADMIN_REPORT_EMAIL;
     if (adminEmail) {
-      console.log('[API Submit] Dispatching report to Admin email:', adminEmail);
-      // Don't await — send in background so user gets instant redirect
+      console.log('[API Submit] Dispatching report to Admin...');
       sendReportEmail(adminEmail, reportData, pdfBuffer)
         .then(() => console.log('[API Submit] Admin email notification sent successfully'))
         .catch((emailErr) => console.error('[API Submit] Email send failed:', emailErr.message));
@@ -116,15 +231,21 @@ export async function POST(request) {
       console.warn('[API Submit] ADMIN_REPORT_EMAIL not configured in environment variables');
     }
 
+    // Data Exposure Fix (Finding 5): No internal details in response
+    submissionLocks.delete(lockKey);
     return NextResponse.json({
       success: true,
       message: 'Application submitted successfully',
-      recipient: adminEmail,
     });
   } catch (error) {
     console.error('[API Submit] Error:', error);
+    // Ensure we release the lock in case of an error
+    if (lockKey) {
+      submissionLocks.delete(lockKey);
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to process and submit application', details: error.message },
+      { error: 'Failed to process and submit application' },
       { status: 500 }
     );
   }

@@ -96,3 +96,77 @@ export async function sendReportEmail(to, reportData, pdfBuffer) {
   return result;
 }
 
+/**
+ * Send a welcome confirmation email for new registrations.
+ *
+ * @param {string} to - Recipient email address
+ * @param {string} name - User's name
+ */
+export async function sendWelcomeEmail(to, name) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.SMTP_FROM || '"Registry Portal" <noreply@certin-ican.in>',
+    to,
+    subject: 'Welcome to the Registry Portal!',
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2>Welcome, ${name}!</h2>
+        <p>Your account has been successfully created.</p>
+        <p>You can now log in and submit your product information.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+  }
+}
+
+/**
+ * Send an already registered notification.
+ *
+ * @param {string} to - Recipient email address
+ * @param {string} name - User's name (if available)
+ */
+export async function sendAlreadyRegisteredEmail(to, name) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.SMTP_FROM || '"Registry Portal" <noreply@certin-ican.in>',
+    to,
+    subject: 'Registration Attempt on Registry Portal',
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2>Hello ${name ? name : ''},</h2>
+        <p>We noticed a recent registration attempt using this email address.</p>
+        <p>This email is already registered in our system. If this was you, please log in instead.</p>
+        <p>If you forgot your password, please use the password reset feature.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('Error sending already registered email:', error);
+  }
+}

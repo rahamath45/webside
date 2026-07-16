@@ -4,11 +4,11 @@ services:
     container_name: webside_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: webside
-      POSTGRES_USER: webside_user
-      POSTGRES_PASSWORD: webside_db_pass_2026
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "127.0.0.1:5434:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - webside_pgdata:/var/lib/postgresql/data
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
