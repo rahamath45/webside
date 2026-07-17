@@ -4,8 +4,27 @@ import pool from '@/lib/db';
 import { validateEmail } from '@/lib/email-validator';
 import { isValidString, validateAndSanitize, FIELD_LIMITS } from '@/lib/sanitize';
 import { sendWelcomeEmail, sendAlreadyRegisteredEmail } from '@/lib/email-sender';
+import { authRateLimiter } from '@/lib/rate-limit';
+
 export async function POST(request) {
   try {
+    // Finding 1: Rate limiting on signup endpoint
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+               request.headers.get('x-real-ip') ||
+               'unknown';
+    const rateLimit = authRateLimiter.check(ip);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { message: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil((rateLimit.resetTime.getTime() - Date.now()) / 1000)),
+          },
+        }
+      );
+    }
+
     // Finding 13: Strictly validate Content-Type header
     const contentType = request.headers.get('content-type') || '';
     if (!contentType.includes('application/json')) {
@@ -15,7 +34,16 @@ export async function POST(request) {
       );
     }
 
-    const body = await request.json();
+    // Finding 3: Graceful handling of malformed JSON
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      return NextResponse.json(
+        { message: 'Bad Request: Invalid or malformed JSON body' },
+        { status: 400 }
+      );
+    }
 
     // Finding 14: Mass Assignment Protection
     // Strict whitelist: Only allow name, email, password

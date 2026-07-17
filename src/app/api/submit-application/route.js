@@ -48,12 +48,25 @@ export async function POST(request) {
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: 'Too many submissions. Please try again later.' },
-        { status: 429, headers: { 'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000) } }
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil((rateLimit.resetTime.getTime() - Date.now()) / 1000)),
+          },
+        }
       );
     }
 
-    // 2. Parse payload
-    const payload = await request.json();
+    // 2. Parse payload (Finding 3: Graceful handling of malformed JSON)
+    let payload;
+    try {
+      payload = await request.json();
+    } catch (parseError) {
+      return NextResponse.json(
+        { error: 'Bad Request: Invalid or malformed JSON body' },
+        { status: 400 }
+      );
+    }
     console.log('[API Submit] Received application from user:', session.user.email);
 
     // Type Confusion check (Finding 8, 12):
