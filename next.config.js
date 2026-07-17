@@ -36,7 +36,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self' https: data: 'unsafe-inline';",
+            value: "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';",
           },
           {
             key: 'Cross-Origin-Opener-Policy',
