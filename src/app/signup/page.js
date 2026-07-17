@@ -11,32 +11,6 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState({ score: 0, text: '', color: '' });
-
-  // Evaluate password strength
-  useEffect(() => {
-    let score = 0;
-    if (password.length > 0) {
-      if (password.length >= 8) score += 1;
-      if (/[A-Z]/.test(password)) score += 1;
-      if (/[a-z]/.test(password)) score += 1;
-      if (/\d/.test(password)) score += 1;
-      if (/[\W_]/.test(password)) score += 1;
-    }
-
-    let text = '';
-    let color = '';
-    if (score === 0) {
-      text = ''; color = 'transparent';
-    } else if (score <= 2) {
-      text = 'Weak'; color = '#ef4444';
-    } else if (score <= 4) {
-      text = 'Fair'; color = '#eab308';
-    } else {
-      text = 'Strong'; color = '#22c55e';
-    }
-    setPasswordStrength({ score, text, color });
-  }, [password]);
 
   const validateEmailClient = (email) => {
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -54,7 +28,8 @@ export default function SignupPage() {
     }
 
     // Finding 1: Client-side password validation
-    if (passwordStrength.score < 5) {
+    const hasComplexity = password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /\d/.test(password) && /[\W_]/.test(password);
+    if (!hasComplexity) {
       setError('Password must be at least 8 characters long and include an uppercase letter, lowercase letter, number, and special character');
       return;
     }
@@ -171,19 +146,9 @@ export default function SignupPage() {
             />
           </div>
 
-          {/* Finding 1: Password Strength Meter */}
-          {password.length > 0 && (
-            <div style={{ marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                <span>Password strength:</span>
-                <span style={{ color: passwordStrength.color, fontWeight: 'bold' }}>{passwordStrength.text}</span>
-              </div>
-              <div style={{ height: '4px', width: '100%', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden', display: 'flex' }}>
-                <div style={{ height: '100%', width: `${(passwordStrength.score / 5) * 100}%`, backgroundColor: passwordStrength.color, transition: 'all 0.3s ease' }} />
-              </div>
-            </div>
-          )}
-
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '-0.5rem', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+            Must be at least 8 chars (recommend 12+) with uppercase, lowercase, numbers & special chars.
+          </div>
           <button
             type="submit"
             disabled={loading || success !== ''}
