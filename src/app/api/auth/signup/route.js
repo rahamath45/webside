@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { hashPassword } from '@/lib/password';
 import pool from '@/lib/db';
 import { validateEmail } from '@/lib/email-validator';
@@ -93,7 +94,8 @@ export async function POST(request) {
 
     // Use sanitized values from this point (Finding 7: XSS stripped)
     const name = nameCheck.sanitized;
-    const email = emailCheck.sanitized;
+    // Finding 4: Trim and canonicalize email to prevent whitespace bypasses
+    const email = emailCheck.sanitized.trim().toLowerCase();
     const password = body.password; // Don't strip HTML from password — it gets hashed anyway
 
     // Email format validation (Finding 2)
@@ -120,29 +122,25 @@ export async function POST(request) {
       );
     }
 
-    // Check if email already exists — parameterized query prevents SQL injection.
-    const { rows: existing } = await pool.query(
-      'SELECT id FROM users WHERE LOWER(email) = LOWER($1)',
-      [email]
-    );
-
     const hashedPassword = await hashPassword(password);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Finding 10: Race Condition Fix - Atomic Insert
+    const { rowCount } = await pool.query(
+      `INSERT INTO users (name, email, password, email_verified, verification_token, verification_token_expires) 
+       VALUES ($1, $2, $3, FALSE, $4, $5) 
+       ON CONFLICT (email) DO NOTHING`,
+      [name, email, hashedPassword, verificationToken, tokenExpires]
+    );
 
     // User Enumeration Fix (Finding 11):
     // Return the SAME generic message whether the email already exists or is newly created.
-    // If email exists, silently skip insertion. Attacker cannot distinguish 409 vs 201.
-    if (existing.length === 0) {
-      await pool.query(
-        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',
-        [name, email.toLowerCase(), hashedPassword]
-      );
-      
-      // Send welcome email in background
-      sendWelcomeEmail(email, name).catch(console.error);
+    if (rowCount > 0) {
+      // Send welcome email with verification link in background
+      sendWelcomeEmail(email, name, verificationToken).catch(console.error);
     } else {
       // Send already registered email in background
-      // Note: We don't have the existing user's name readily available without selecting it, 
-      // but we can just pass the provided name or null.
       sendAlreadyRegisteredEmail(email, name).catch(console.error);
     }
 

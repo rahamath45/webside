@@ -9,6 +9,12 @@ CREATE TABLE IF NOT EXISTS users (
   name      VARCHAR(255) NOT NULL,
   email     VARCHAR(255) UNIQUE NOT NULL,
   password  VARCHAR(255) NOT NULL,
+  email_verified BOOLEAN DEFAULT FALSE,
+  verification_token VARCHAR(255),
+  verification_token_expires TIMESTAMP WITH TIME ZONE,
+  totp_secret VARCHAR(255),
+  totp_enabled BOOLEAN DEFAULT FALSE,
+  totp_backup_codes TEXT[],
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

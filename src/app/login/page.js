@@ -11,6 +11,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showTotp, setShowTotp] = useState(false);
+  const [totpCode, setTotpCode] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,11 +23,17 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email,
         password,
+        totpCode: showTotp ? totpCode : undefined,
         redirect: false,
       });
 
       if (result?.error) {
-        setError('Invalid credentials.');
+        if (result.error === 'TOTP_REQUIRED') {
+          setShowTotp(true);
+          setLoading(false);
+          return;
+        }
+        setError(result.error || 'Invalid credentials.');
         setLoading(false);
         return;
       }
@@ -77,34 +85,54 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.inputGroup}>
-            <div style={styles.inputIconWrapper}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            </div>
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
+          {!showTotp ? (
+            <>
+              <div style={styles.inputGroup}>
+                <div style={styles.inputIconWrapper}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  style={styles.input}
+                />
+              </div>
 
-          <div style={styles.inputGroup}>
-            <div style={styles.inputIconWrapper}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <div style={styles.inputGroup}>
+                <div style={styles.inputIconWrapper}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  style={styles.input}
+                />
+              </div>
+            </>
+          ) : (
+            <div style={styles.inputGroup}>
+              <div style={styles.inputIconWrapper}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <input
+                type="text"
+                placeholder="6-digit Authenticator Code"
+                value={totpCode}
+                onChange={(e) => setTotpCode(e.target.value)}
+                required
+                maxLength={6}
+                style={styles.input}
+                autoFocus
+              />
             </div>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-              style={styles.input}
-            />
-          </div>
+          )}
 
           <button
             type="submit"
@@ -115,7 +143,7 @@ export default function LoginPage() {
               <span style={styles.spinner} />
             ) : (
               <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                Sign In 
+                {showTotp ? 'Verify Code' : 'Sign In'}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
               </span>
             )}

@@ -1,6 +1,19 @@
 import nodemailer from 'nodemailer';
 
 /**
+ * Escapes HTML characters to prevent XSS in email templates.
+ */
+function escapeHtml(unsafe) {
+  if (typeof unsafe !== 'string') return '';
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/**
  * Send the generated PDF report via email to the applicant.
  *
  * @param {string} to - Recipient email address
@@ -27,10 +40,10 @@ export async function sendReportEmail(to, reportData, pdfBuffer) {
     },
   });
 
-  const applicantName = reportData.contactPersonName || 'Applicant';
-  const orgName = reportData.organizationName || 'N/A';
-  const productName = reportData.productName || 'N/A';
-  const submitterEmail = reportData.contactEmail || reportData.email || 'N/A';
+  const applicantName = escapeHtml(reportData.contactPersonName || 'Applicant');
+  const orgName = escapeHtml(reportData.organizationName || 'N/A');
+  const productName = escapeHtml(reportData.productName || 'N/A');
+  const submitterEmail = escapeHtml(reportData.contactEmail || reportData.email || 'N/A');
 
   const mailOptions = {
     from: process.env.SMTP_FROM || '"CERT-In & ICAN Report System" <noreply@certin-ican.in>',
@@ -101,8 +114,9 @@ export async function sendReportEmail(to, reportData, pdfBuffer) {
  *
  * @param {string} to - Recipient email address
  * @param {string} name - User's name
+ * @param {string} token - Verification token
  */
-export async function sendWelcomeEmail(to, name) {
+export async function sendWelcomeEmail(to, name, token) {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587'),
@@ -116,12 +130,13 @@ export async function sendWelcomeEmail(to, name) {
   const mailOptions = {
     from: process.env.SMTP_FROM || '"Registry Portal" <noreply@certin-ican.in>',
     to,
-    subject: 'Welcome to the Registry Portal!',
+    subject: 'Verify your email - Registry Portal',
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2>Welcome, ${name}!</h2>
+        <h2>Welcome, ${escapeHtml(name)}!</h2>
         <p>Your account has been successfully created.</p>
-        <p>You can now log in and submit your product information.</p>
+        <p>Please verify your email address to continue by clicking the link below:</p>
+        <a href="${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}" style="display: inline-block; padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
       </div>
     `,
   };
@@ -156,7 +171,7 @@ export async function sendAlreadyRegisteredEmail(to, name) {
     subject: 'Registration Attempt on Registry Portal',
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2>Hello ${name ? name : ''},</h2>
+        <h2>Hello ${name ? escapeHtml(name) : ''},</h2>
         <p>We noticed a recent registration attempt using this email address.</p>
         <p>This email is already registered in our system. If this was you, please log in instead.</p>
         <p>If you forgot your password, please use the password reset feature.</p>
