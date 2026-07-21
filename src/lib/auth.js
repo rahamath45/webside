@@ -2,7 +2,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { verifyPassword } from '@/lib/password';
 import pool from '@/lib/db';
-import { sessionBlacklist, generateJti } from '@/lib/token-blacklist';
+import crypto from 'crypto';
 import * as OTPAuth from 'otpauth';
 
 export const authOptions = {
@@ -89,14 +89,23 @@ export const authOptions = {
       // Setup JTI on initial sign in
       if (user) {
         token.id = user.id;
-        token.jti = generateJti();
+        token.jti = crypto.randomUUID();
         token.totp_enabled = user.totp_enabled;
       }
 
-      // Finding 7: Check token blacklist
-      if (token.jti && sessionBlacklist.isBlacklisted(token.jti)) {
-        // Token is revoked
-        return {};
+      // Finding 7: Check database blacklist for revoked tokens
+      if (token.jti) {
+        try {
+          const { rowCount } = await pool.query(
+            'SELECT 1 FROM token_blacklist WHERE jti = $1',
+            [token.jti]
+          );
+          if (rowCount > 0) {
+            return {}; // Token is revoked!
+          }
+        } catch (err) {
+          console.error('Failed to check token blacklist', err);
+        }
       }
 
       return token;
@@ -114,11 +123,18 @@ export const authOptions = {
     },
   },
   events: {
-    // Finding 7: Blacklist session on signout
+    // Finding 7: Blacklist session on signout (persisted to PostgreSQL)
     async signOut({ token }) {
       if (token && token.jti) {
-        // Add to blacklist with 24h expiry
-        sessionBlacklist.add(token.jti, Date.now() + 24 * 60 * 60 * 1000);
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        try {
+          await pool.query(
+            'INSERT INTO token_blacklist (jti, expires_at) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+            [token.jti, expiresAt]
+          );
+        } catch (err) {
+          console.error('Failed to blacklist token', err);
+        }
       }
     }
   },

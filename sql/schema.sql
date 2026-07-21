@@ -45,6 +45,21 @@ CREATE TABLE IF NOT EXISTS applications (
   submitted_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Table for pending signups (OTP verification flow)
+CREATE TABLE IF NOT EXISTS pending_users (
+  email VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  otp VARCHAR(6) NOT NULL,
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+-- Table for session token blacklist (logout)
+CREATE TABLE IF NOT EXISTS token_blacklist (
+  jti VARCHAR(255) PRIMARY KEY,
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
 -- Index for fast email lookups
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (LOWER(email));
 CREATE INDEX IF NOT EXISTS idx_applications_user_email ON applications (user_email);
