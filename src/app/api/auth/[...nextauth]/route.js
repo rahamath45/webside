@@ -23,16 +23,32 @@ export async function POST(req, ctx) {
                  req.headers.get('x-real-ip') ||
                  'unknown';
 
-      const rateLimit = authRateLimiter.check(ip);
+      // F-14 Fix: IP-based progressive throttling
+      const ipLimit = authRateLimiter.check(`ip:${ip}`);
+
+      // F-14 Fix: Account-based limits alongside IP-based limits
+      // Extract email from the request body for account-based limiting
+      let accountLimit = { success: true, retryAfter: 0 };
+      try {
+        const clonedReq = req.clone();
+        const body = await clonedReq.json();
+        if (body?.email) {
+          accountLimit = authRateLimiter.check(`account:${body.email.trim().toLowerCase()}`);
+        }
+      } catch (_) { /* ignore parse errors */ }
+
+      // Use the stricter of the two limits
+      const rateLimit = (!ipLimit.success || !accountLimit.success)
+        ? (ipLimit.retryAfter >= accountLimit.retryAfter ? ipLimit : accountLimit)
+        : ipLimit;
 
       if (!rateLimit.success) {
-        // Finding 1 (prev): Rate Limiting on Auth Endpoints
         return NextResponse.json(
-          { error: 'Too many login attempts, please try again later.' },
+          { error: `Too many login attempts. Please try again in ${rateLimit.retryAfter} seconds.` },
           {
             status: 429,
             headers: {
-              'Retry-After': String(Math.ceil((rateLimit.resetTime.getTime() - Date.now()) / 1000)),
+              'Retry-After': String(rateLimit.retryAfter),
             },
           }
         );

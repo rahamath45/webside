@@ -9,18 +9,18 @@ import { authRateLimiter } from '@/lib/rate-limit';
 
 export async function POST(request) {
   try {
-    // Finding 1: Rate limiting on signup endpoint
+    // Finding 1: Rate limiting on signup endpoint (F-14: progressive throttling)
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
                request.headers.get('x-real-ip') ||
                'unknown';
-    const rateLimit = authRateLimiter.check(ip);
+    const rateLimit = authRateLimiter.check(`ip:${ip}`);
     if (!rateLimit.success) {
       return NextResponse.json(
-        { message: 'Too many requests. Please try again later.' },
+        { message: `Too many requests. Please try again in ${rateLimit.retryAfter} seconds.` },
         {
           status: 429,
           headers: {
-            'Retry-After': String(Math.ceil((rateLimit.resetTime.getTime() - Date.now()) / 1000)),
+            'Retry-After': String(rateLimit.retryAfter),
           },
         }
       );
