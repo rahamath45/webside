@@ -185,3 +185,50 @@ export async function sendAlreadyRegisteredEmail(to, name) {
     console.error('Error sending already registered email:', error);
   }
 }
+
+/**
+ * Send an OTP email for signup verification.
+ *
+ * @param {string} to - Recipient email address
+ * @param {string} name - User's name
+ * @param {string} otp - 6-digit OTP code
+ */
+export async function sendSignupOtpEmail(to, name, otp) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  const safeName = escapeHtml(name || 'User');
+
+  const mailOptions = {
+    from: process.env.SMTP_FROM || '"Registry Portal" <noreply@certin-ican.in>',
+    to,
+    subject: 'Your Verification Code',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <h2 style="color: #0056b3;">Verify Your Email</h2>
+        <p>Dear ${safeName},</p>
+        <p>Thank you for registering. Please use the following 6-digit code to complete your signup:</p>
+        <div style="margin: 30px 0; padding: 20px; background-color: #f4f4f4; text-align: center; border-radius: 8px;">
+          <h1 style="margin: 0; font-size: 32px; letter-spacing: 5px; color: #d35400;">${otp}</h1>
+        </div>
+        <p>This code is valid for 15 minutes.</p>
+        <p>If you did not request this, please ignore this email.</p>
+        <br/>
+        <p>Best regards,<br/>The Registry Portal Team</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('Error sending OTP email:', error);
+  }
+}

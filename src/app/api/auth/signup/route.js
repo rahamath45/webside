@@ -4,7 +4,7 @@ import { hashPassword } from '@/lib/password';
 import pool from '@/lib/db';
 import { validateEmail } from '@/lib/email-validator';
 import { isValidString, validateAndSanitize, FIELD_LIMITS } from '@/lib/sanitize';
-import { sendWelcomeEmail, sendAlreadyRegisteredEmail } from '@/lib/email-sender';
+import { sendSignupOtpEmail } from '@/lib/email-sender';
 import { authRateLimiter } from '@/lib/rate-limit';
 
 export async function POST(request) {
@@ -123,30 +123,40 @@ export async function POST(request) {
     }
 
     const hashedPassword = await hashPassword(password);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-    // Finding 10: Race Condition Fix - Atomic Insert
-    const { rowCount } = await pool.query(
-      `INSERT INTO users (name, email, password, email_verified, verification_token, verification_token_expires) 
-       VALUES ($1, $2, $3, FALSE, $4, $5) 
-       ON CONFLICT (email) DO NOTHING`,
-      [name, email, hashedPassword, verificationToken, tokenExpires]
-    );
-
-    // User Enumeration Fix (Finding 11):
-    // Return the SAME generic message whether the email already exists or is newly created.
-    if (rowCount > 0) {
-      // Send welcome email with verification link in background
-      sendWelcomeEmail(email, name, verificationToken).catch(console.error);
-    } else {
-      // Send already registered email in background
-      sendAlreadyRegisteredEmail(email, name).catch(console.error);
+    
+    // Check if user already exists in main users table
+    const existingUser = await pool.query('SELECT 1 FROM users WHERE email = $1', [email]);
+    if (existingUser.rowCount > 0) {
+      // User Enumeration Fix (Finding 11): 
+      // Return success even if email is registered to prevent probing
+      return NextResponse.json(
+        { message: 'If this email is not already registered, an OTP has been sent. Please check your email.' },
+        { status: 200 }
+      );
     }
 
-    // Always return 200 with a generic message (Finding 11)
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const tokenExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    // Upsert into pending_users table (handles resending OTPs)
+    await pool.query(
+      `INSERT INTO pending_users (email, name, password, otp, expires_at) 
+       VALUES ($1, $2, $3, $4, $5) 
+       ON CONFLICT (email) DO UPDATE SET 
+       name = EXCLUDED.name, 
+       password = EXCLUDED.password, 
+       otp = EXCLUDED.otp, 
+       expires_at = EXCLUDED.expires_at`,
+      [email, name, hashedPassword, otp, tokenExpires]
+    );
+
+    // Send the OTP email
+    sendSignupOtpEmail(email, name, otp).catch(console.error);
+
+    // Always return 200 with generic message
     return NextResponse.json(
-      { message: 'If this email is not already registered, an account has been created. Please check your email.' },
+      { message: 'If this email is not already registered, an OTP has been sent. Please check your email.' },
       { status: 200 }
     );
   } catch (error) {

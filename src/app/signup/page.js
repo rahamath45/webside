@@ -1,13 +1,20 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function SignupPage() {
   const router = useRouter();
+  
+  // Step 1 State
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  // Step 2 State
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState(1);
+  
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,17 +24,15 @@ export default function SignupPage() {
     return emailRegex.test(email);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSignupSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
-    // Finding 2: Client-side email validation
     if (!validateEmailClient(email)) {
       setError('Please enter a valid email address');
       return;
     }
 
-    // Finding 1: Client-side password validation
     const hasComplexity = password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /\d/.test(password) && /[\W_]/.test(password);
     if (!hasComplexity) {
       setError('Password must be at least 8 characters long and include an uppercase letter, lowercase letter, number, and special character');
@@ -40,9 +45,7 @@ export default function SignupPage() {
     try {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       });
 
@@ -54,7 +57,38 @@ export default function SignupPage() {
         return;
       }
 
-      setSuccess('Account created successfully! Redirecting...');
+      setSuccess('OTP sent! Please check your email.');
+      setStep(2);
+      setLoading(false);
+
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/signup/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || 'Invalid or expired OTP');
+        setLoading(false);
+        return;
+      }
+
+      setSuccess('Account created successfully! Redirecting to login...');
       setTimeout(() => {
         router.push('/login');
       }, 1500);
@@ -78,7 +112,7 @@ export default function SignupPage() {
 
         <h1 style={styles.title}>Sign up for Registry Portal</h1>
         <p style={styles.subtitle}>
-          Create an account to submit your product
+          {step === 1 ? 'Create an account to submit your product' : 'Verify your email to continue'}
         </p>
 
         {error && (
@@ -102,68 +136,77 @@ export default function SignupPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.inputGroup}>
-            <div style={styles.inputIconWrapper}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        {step === 1 ? (
+          <form onSubmit={handleSignupSubmit} style={styles.form}>
+            <div style={styles.inputGroup}>
+              <div style={styles.inputIconWrapper}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                style={styles.input}
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
 
-          <div style={styles.inputGroup}>
-            <div style={styles.inputIconWrapper}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <div style={styles.inputGroup}>
+              <div style={styles.inputIconWrapper}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </div>
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={styles.input}
+              />
             </div>
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
 
-          <div style={styles.inputGroup}>
-            <div style={styles.inputIconWrapper}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <div style={styles.inputGroup}>
+              <div style={styles.inputIconWrapper}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+                style={styles.input}
+              />
             </div>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-              style={styles.input}
-            />
-          </div>
 
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '-0.5rem', marginBottom: '0.5rem', lineHeight: '1.4' }}>
-            Must be at least 8 chars (recommend 12+) with uppercase, lowercase, numbers & special chars.
-          </div>
-          <button
-            type="submit"
-            disabled={loading || success !== ''}
-            style={styles.submitBtn}
-          >
-            {loading ? (
-              <span style={styles.spinner} />
-            ) : (
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                Sign Up 
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </span>
-            )}
-          </button>
-        </form>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '-0.5rem', marginBottom: '0.5rem', lineHeight: '1.4' }}>
+              Must be at least 8 chars (recommend 12+) with uppercase, lowercase, numbers & special chars.
+            </div>
+            
+            <button type="submit" disabled={loading} style={styles.submitBtn}>
+              {loading ? <span style={styles.spinner} /> : <span>Send OTP</span>}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleOtpSubmit} style={styles.form}>
+            <div style={styles.inputGroup}>
+              <input
+                type="text"
+                placeholder="Enter 6-digit OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+                maxLength={6}
+                style={{...styles.input, paddingLeft: '1rem', textAlign: 'center', letterSpacing: '5px', fontSize: '1.25rem'}}
+              />
+            </div>
+            <button type="submit" disabled={loading || otp.length !== 6} style={styles.submitBtn}>
+              {loading ? <span style={styles.spinner} /> : <span>Verify and Create Account</span>}
+            </button>
+          </form>
+        )}
 
         <div style={styles.signupText}>
           <span>Already have an account?</span>
