@@ -75,6 +75,7 @@ export const FIELD_LIMITS = {
   contactEmail: 254,
   productName: 200,
   productCategory: 200,
+  productCategoryOther: 200,
   deploymentModel: 200,
   briefDescription: 5000,
   keyFeatures: 5000,

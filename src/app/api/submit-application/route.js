@@ -97,7 +97,7 @@ export async function POST(request) {
     // Validate, sanitize, and enforce length limits on every application field.
     const applicationFields = [
       'organizationName', 'contactPersonName', 'contactEmail',
-      'productName', 'productCategory', 'deploymentModel',
+      'productName', 'productCategory', 'productCategoryOther', 'deploymentModel',
       'briefDescription', 'keyFeatures', 'indigenousContent',
       'ipOwnership', 'foreignComponents', 'sbomAvailability',
       'sbomFormat', 'pocAvailability', 'awards', 'benchmarking',
@@ -141,13 +141,19 @@ export async function POST(request) {
     submissionLocks.set(lockKey, true);
 
     // 3. Map fields to report data (using sanitized values — Finding 7)
+    // Merge custom category into productCategory when "Others" is selected
+    let finalProductCategory = sanitizedPayload.productCategory;
+    if (sanitizedPayload.productCategory === 'Others \u2013 Not Listed' && sanitizedPayload.productCategoryOther) {
+      finalProductCategory = `Others \u2013 ${sanitizedPayload.productCategoryOther}`;
+    }
+
     const reportData = {
       email: session.user.email || '',
       organizationName: sanitizedPayload.organizationName,
       contactPersonName: sanitizedPayload.contactPersonName,
       contactEmail: sanitizedPayload.contactEmail || session.user.email || '',
       productName: sanitizedPayload.productName,
-      productCategory: sanitizedPayload.productCategory,
+      productCategory: finalProductCategory,
       deploymentModel: sanitizedPayload.deploymentModel,
       briefDescription: sanitizedPayload.briefDescription,
       keyFeatures: sanitizedPayload.keyFeatures,
