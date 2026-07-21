@@ -32,5 +32,5 @@ export class RateLimiter {
 }
 
 // Singleton instances for different endpoints
-export const authRateLimiter = new RateLimiter(60 * 1000, 5); // 5 attempts per minute
+export const authRateLimiter = new RateLimiter(60 * 1000, 25); // 25 attempts per minute to support legitimate multi-step workflows (F-14)
 export const submitRateLimiter = new RateLimiter(60 * 60 * 1000, 1); // 1 submission per hour per user/IP
