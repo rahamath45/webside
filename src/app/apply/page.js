@@ -534,8 +534,8 @@ export default function ApplyPage() {
                       min={currentQuestion.min}
                       max={currentQuestion.max}
                       style={{ flex: 1, accentColor: 'var(--accent-blue)', height: '8px' }}
-                      value={answers[currentQuestion.id] || 0}
-                      onChange={(e) => handleInputChange(parseInt(e.target.value))}
+                      value={answers[currentQuestion.id] || '0'}
+                      onChange={(e) => handleInputChange(String(parseInt(e.target.value) || 0))}
                     />
                     <input
                       type="number"
@@ -543,8 +543,8 @@ export default function ApplyPage() {
                       style={{ width: '80px', textAlign: 'center', background: 'rgba(0,0,0,0.25)' }}
                       min={currentQuestion.min}
                       max={currentQuestion.max}
-                      value={answers[currentQuestion.id] || 0}
-                      onChange={(e) => handleInputChange(parseInt(e.target.value) || 0)}
+                      value={answers[currentQuestion.id] || '0'}
+                      onChange={(e) => handleInputChange(String(parseInt(e.target.value) || 0))}
                     />
                     <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>%</span>
                   </div>
