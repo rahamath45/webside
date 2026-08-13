@@ -151,7 +151,7 @@ export default function LandingPage() {
             <div>
               <h2 style={styles.sectionTitle}>About the <span className="text-gradient">Initiative</span></h2>
               <p style={styles.aboutText}>
-                CERT-In (Indian Computer Emergency Response Team) and ICAN (Indian Cyber Assurance Nucleus),
+                CERT-In (Indian Computer Emergency Response Team) and ICAN (Indian Cybersecurity Academic Network),
                 in collaboration with ITEL Foundation, have launched this joint initiative to create
                 a comprehensive directory of indigenous cybersecurity tools and products developed in India.
               </p>
