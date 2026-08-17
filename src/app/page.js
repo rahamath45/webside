@@ -102,11 +102,11 @@ export default function LandingPage() {
           <div className="animate-fade-in-up" style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
             <div style={styles.heroLogos}>
               <div style={styles.heroLogoWrapper}>
-                <img src="/logos/certin-logo.png" alt="CERT-In" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
+                <img src="/logos/certin-logo-original.png" alt="CERT-In" style={{ height: '48px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }} />
               </div>
               <div style={styles.heroDivider} />
               <div style={styles.heroLogoWrapper}>
-                <img src="/logos/itel-logo.png" alt="ITEL" style={{ height: '66px', width: 'auto', objectFit: 'contain' }} />
+                <img src="/logos/itel-logo-new.png" alt="ITEL" style={{ height: '66px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }} />
               </div>
             </div>
             <div style={styles.badge}>

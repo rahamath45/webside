@@ -15,19 +15,8 @@ def process_logo(input_path, output_path):
         if r > 235 and g > 235 and b > 235:
             new_data.append((0, 0, 0, 0))
         else:
-            # 2. Convert neutral dark/grey pixels to white text
-            # Saffron, green, and blue have distinct R/G/B values, so they won't match this neutral check.
-            diff_rg = abs(r - g)
-            diff_gb = abs(g - b)
-            diff_rb = abs(r - b)
-            
-            # If it's a shade of grey/black (all channels close to each other)
-            if diff_rg < 35 and diff_gb < 35 and diff_rb < 35:
-                # Make it white
-                new_data.append((255, 255, 255, a))
-            else:
-                # Keep original colored pixel
-                new_data.append((r, g, b, a))
+            # Just keep the original colored pixel (dark text stays dark)
+            new_data.append((r, g, b, a))
                 
     img.putdata(new_data)
     
