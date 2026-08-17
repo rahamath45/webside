@@ -146,29 +146,28 @@ const styles = {
     alignItems: 'center', 
     justifyContent: 'center',
     padding: '1rem',
-    background: 'var(--bg-primary)',
+    background: '#f8f9fa',
     fontFamily: 'var(--font-primary), sans-serif',
   },
   card: {
     width: '100%', 
     maxWidth: '500px', 
-    background: 'var(--bg-card)',
-    backdropFilter: 'blur(16px)',
-    border: '1px solid var(--border-color)',
+    background: '#ffffff',
+    border: '1px solid #e5e7eb',
     padding: '2.5rem',
     borderRadius: '24px',
-    boxShadow: 'var(--shadow-md)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
   },
   title: {
     fontSize: '1.35rem',
     fontWeight: '700',
-    color: 'var(--text-primary)',
+    color: '#111827',
     textAlign: 'center',
     margin: '0 0 0.25rem 0',
   },
   subtitle: {
     fontSize: '0.85rem',
-    color: 'var(--text-secondary)',
+    color: '#6b7280',
     textAlign: 'center',
     margin: '0 0 1.5rem 0',
   },
@@ -198,9 +197,9 @@ const styles = {
     fontSize: '1.25rem',
     textAlign: 'center',
     letterSpacing: '5px',
-    color: 'var(--text-primary)',
-    background: 'rgba(255, 255, 255, 0.04)',
-    border: '1px solid var(--border-color)',
+    color: '#111827',
+    background: '#f9fafb',
+    border: '1px solid #e5e7eb',
     borderRadius: '10px',
     outline: 'none',
   },
@@ -215,7 +214,8 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     width: 'fit-content',
-    margin: '0 auto'
+    margin: '0 auto',
+    border: '1px solid #e5e7eb',
   },
   qrCode: {
     width: '200px',
@@ -224,8 +224,8 @@ const styles = {
   backupCodesContainer: {
     marginTop: '2rem',
     padding: '1rem',
-    background: 'rgba(249, 115, 22, 0.05)',
-    border: '1px solid rgba(249, 115, 22, 0.2)',
+    background: 'rgba(234, 88, 12, 0.04)',
+    border: '1px solid rgba(234, 88, 12, 0.2)',
     borderRadius: '8px'
   },
   backupGrid: {
@@ -234,11 +234,11 @@ const styles = {
     gap: '0.5rem'
   },
   backupCode: {
-    background: 'rgba(0,0,0,0.2)',
+    background: '#f1f5f9',
     padding: '0.5rem',
     textAlign: 'center',
     borderRadius: '4px',
     fontFamily: 'monospace',
-    color: 'var(--text-primary)'
+    color: '#111827'
   }
 };

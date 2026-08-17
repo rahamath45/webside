@@ -147,6 +147,14 @@ export async function POST(request) {
       finalProductCategory = `Others \u2013 ${sanitizedPayload.productCategoryOther}`;
     }
 
+    // Convert Yes/No strings to booleans for BOOLEAN columns
+    const toBool = (val) => val === 'Yes' || (typeof val === 'string' && val.startsWith('Yes'));
+    // Convert percentage string to integer for SMALLINT column
+    const toPercent = (val) => {
+      const n = parseInt(val, 10);
+      return isNaN(n) ? 0 : Math.max(0, Math.min(100, n));
+    };
+
     const reportData = {
       email: session.user.email || '',
       organizationName: sanitizedPayload.organizationName,
@@ -157,17 +165,17 @@ export async function POST(request) {
       deploymentModel: sanitizedPayload.deploymentModel,
       briefDescription: sanitizedPayload.briefDescription,
       keyFeatures: sanitizedPayload.keyFeatures,
-      indigenousContent: sanitizedPayload.indigenousContent,
+      indigenousContent: toPercent(sanitizedPayload.indigenousContent),
       ipOwnership: sanitizedPayload.ipOwnership,
       foreignComponents: sanitizedPayload.foreignComponents,
-      sbomAvailability: sanitizedPayload.sbomAvailability,
+      sbomAvailability: toBool(sanitizedPayload.sbomAvailability),
       sbomFormat: sanitizedPayload.sbomFormat,
-      pocAvailability: sanitizedPayload.pocAvailability,
+      pocAvailability: toBool(sanitizedPayload.pocAvailability),
       awards: sanitizedPayload.awards,
       benchmarking: sanitizedPayload.benchmarking,
       deployments: sanitizedPayload.deployments,
       aiAssessment: sanitizedPayload.aiAssessment,
-      rvdPolicy: sanitizedPayload.rvdPolicy,
+      rvdPolicy: toBool(sanitizedPayload.rvdPolicy),
     };
 
     // 4. Save all 20 answers to PostgreSQL

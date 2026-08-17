@@ -245,7 +245,7 @@ export default function ApplyPage() {
     return (
       <div style={styles.loadingWrapper}>
         <div style={styles.spinner} />
-        <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Loading security portal...</p>
+        <p style={{ marginTop: '1rem', color: '#6b7280' }}>Loading security portal...</p>
       </div>
     );
   }
@@ -387,8 +387,8 @@ export default function ApplyPage() {
         {/* Progress Bar at the top of the chat area */}
         <div style={styles.progressContainer}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-            <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Overall Form Completion</span>
-            <span style={{ fontWeight: 600, color: 'var(--accent-cyan)' }}>{progressPercent}% Completed</span>
+            <span style={{ color: '#6b7280', fontWeight: 500 }}>Overall Form Completion</span>
+            <span style={{ fontWeight: 600, color: 'var(--accent-blue)' }}>{progressPercent}% Completed</span>
           </div>
           <div style={styles.progressBarBg}>
             <div style={{ ...styles.progressBarFill, width: `${progressPercent}%` }} />
@@ -425,14 +425,14 @@ export default function ApplyPage() {
                     {q.required && <span style={styles.requiredBadge}>Required</span>}
                   </div>
                   <h3 style={styles.bubbleQuestionTitle}>{q.question}</h3>
-                  <p style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{q.description}</p>
+                  <p style={{ margin: 0, fontSize: '1.05rem', color: '#6b7280', lineHeight: 1.6 }}>{q.description}</p>
                 </div>
 
                 {/* User Answer Bubble */}
                 {isAnswered && idx !== currentStep && (
                   <div style={styles.userBubble} onClick={() => jumpToQuestion(idx)} title="Click to edit this response">
                     <div style={styles.userBubbleHeader}>
-                      <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Your Answer</span>
+                      <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Your Answer</span>
                       <span style={styles.editIndicator}>Edit ✎</span>
                     </div>
                     <p style={styles.userBubbleText}>{answers[q.id].toString()}</p>
@@ -522,7 +522,7 @@ export default function ApplyPage() {
                     value={answers[currentQuestion.id] || ''}
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.25)', borderColor: 'rgba(255,255,255,0.1)' }}
+                    style={{ width: '100%', background: '#f9fafb', borderColor: '#e5e7eb', color: '#111827' }}
                     autoFocus
                   />
                 )}
@@ -540,7 +540,7 @@ export default function ApplyPage() {
                     <input
                       type="number"
                       className="form-input"
-                      style={{ width: '80px', textAlign: 'center', background: 'rgba(0,0,0,0.25)' }}
+                      style={{ width: '80px', textAlign: 'center', background: '#f9fafb', color: '#111827' }}
                       min={currentQuestion.min}
                       max={currentQuestion.max}
                       value={answers[currentQuestion.id] || '0'}
@@ -553,13 +553,13 @@ export default function ApplyPage() {
                 {currentQuestion.type === 'select' && (
                   <select
                     className="form-input"
-                    style={{ width: '100%', background: 'rgba(0,0,0,0.4)', color: '#ffffff', borderColor: 'rgba(255,255,255,0.1)' }}
+                    style={{ width: '100%', background: '#f9fafb', color: '#111827', borderColor: '#e5e7eb' }}
                     value={answers[currentQuestion.id] || ''}
                     onChange={(e) => handleInputChange(e.target.value)}
                   >
                     <option value="" disabled>Select option...</option>
                     {currentQuestion.options.map(opt => (
-                      <option key={opt} value={opt} style={{ background: '#111827', color: '#fff' }}>{opt}</option>
+                      <option key={opt} value={opt} style={{ background: '#ffffff', color: '#111827' }}>{opt}</option>
                     ))}
                   </select>
                 )}
@@ -569,7 +569,7 @@ export default function ApplyPage() {
                     <textarea
                       className="form-input"
                       rows={3}
-                      style={{ resize: 'none', width: '100%', background: 'rgba(0,0,0,0.25)', borderColor: 'rgba(255,255,255,0.1)' }}
+                      style={{ resize: 'none', width: '100%', background: '#f9fafb', borderColor: '#e5e7eb', color: '#111827' }}
                       placeholder={currentQuestion.placeholder}
                       value={answers[currentQuestion.id] || ''}
                       onChange={(e) => handleInputChange(e.target.value)}
@@ -588,8 +588,8 @@ export default function ApplyPage() {
                     {currentQuestion.options.map(opt => (
                       <label key={opt} style={{
                         ...styles.radioOption,
-                        borderColor: answers[currentQuestion.id] === opt ? 'var(--accent-blue)' : 'rgba(255,255,255,0.1)',
-                        background: answers[currentQuestion.id] === opt ? 'rgba(59,130,246,0.12)' : 'rgba(0,0,0,0.2)',
+                        borderColor: answers[currentQuestion.id] === opt ? 'var(--accent-blue)' : '#e5e7eb',
+                        background: answers[currentQuestion.id] === opt ? 'rgba(37,99,235,0.06)' : '#f9fafb',
                       }}>
                         <input
                           type="radio"
@@ -638,7 +638,7 @@ const styles = {
     alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)'
   },
   spinner: {
-    width: 48, height: 48, border: '4px solid rgba(255,255,255,0.05)',
+    width: 48, height: 48, border: '4px solid #e5e7eb',
     borderTopColor: 'var(--accent-blue)', borderRadius: '50%',
     animation: 'spin-slow 0.8s linear infinite'
   },
@@ -648,12 +648,12 @@ const styles = {
     animation: 'spin-slow 0.8s linear infinite', display: 'inline-block', marginRight: '8px'
   },
   wrapper: {
-    background: 'var(--bg-primary)', minHeight: '100vh', display: 'flex', flexDirection: 'column'
+    background: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column'
   },
   nav: {
     position: 'sticky', top: 0, zIndex: 10,
-    background: 'rgba(8, 11, 22, 0.9)', backdropFilter: 'blur(16px)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)', padding: '1.4rem 0',
+    background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(16px)',
+    borderBottom: '1px solid #e5e7eb', padding: '1.4rem 0',
   },
   navInner: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   
@@ -690,13 +690,13 @@ const styles = {
   },
   portalTitle: {
     fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.4rem',
-    color: '#ffffff', letterSpacing: '0.02em', lineHeight: 1.15,
+    color: '#111827', letterSpacing: '0.02em', lineHeight: 1.15,
   },
   portalSubtitle: {
-    fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 500,
+    fontSize: '0.9rem', color: '#6b7280', fontWeight: 500,
     marginTop: '0.15rem',
   },
-  userEmail: { color: 'var(--text-secondary)', fontSize: '0.85rem' },
+  userEmail: { color: '#6b7280', fontSize: '0.85rem' },
 
   // Unified full page layout
   mainContainer: {
@@ -711,14 +711,14 @@ const styles = {
     height: 'calc(100vh - 65px)',
   },
   progressContainer: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid var(--border-color)',
+    background: '#f9fafb',
+    border: '1px solid #e5e7eb',
     borderRadius: '12px',
     padding: '0.65rem 1rem',
     marginBottom: '1rem',
   },
   progressBarBg: {
-    height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '99px',
+    height: '6px', background: '#e5e7eb', borderRadius: '99px',
     overflow: 'hidden', marginTop: '0.5rem'
   },
   progressBarFill: {
@@ -740,11 +740,11 @@ const styles = {
     alignSelf: 'flex-start',
     width: 'fit-content',
     maxWidth: '80%',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid var(--border-color)',
+    background: '#f9fafb',
+    border: '1px solid #e5e7eb',
     borderRadius: '16px 16px 16px 2px',
     padding: '1.25rem 1.65rem',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
     fontSize: '1.15rem',
   },
   botHeader: {
@@ -758,7 +758,7 @@ const styles = {
     letterSpacing: '0.05em', color: 'var(--accent-blue)', fontWeight: 600
   },
   bubbleQuestionTitle: {
-    fontSize: '1.45rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: '#ffffff'
+    fontSize: '1.45rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: '#111827'
   },
   requiredBadge: {
     fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px',
@@ -770,13 +770,13 @@ const styles = {
     alignSelf: 'flex-end',
     width: 'fit-content',
     maxWidth: '80%',
-    background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(59,130,246,0.1) 100%)',
-    border: '1px solid rgba(99,102,241,0.25)',
+    background: 'linear-gradient(135deg, rgba(37,99,235,0.06) 0%, rgba(79,70,229,0.04) 100%)',
+    border: '1px solid rgba(37,99,235,0.15)',
     borderRadius: '16px 16px 2px 16px',
     padding: '1.15rem 1.5rem',
     cursor: 'pointer',
     transition: 'border-color var(--transition-fast)',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
   },
   userBubbleHeader: {
     display: 'flex',
@@ -784,11 +784,11 @@ const styles = {
     marginBottom: '0.35rem',
   },
   userBubbleText: {
-    margin: 0, fontWeight: 500, fontSize: '1.15rem', color: '#ffffff',
+    margin: 0, fontWeight: 500, fontSize: '1.15rem', color: '#111827',
     whiteSpace: 'pre-wrap', wordBreak: 'break-word',
   },
   editIndicator: {
-    fontSize: '0.85rem', color: 'var(--accent-cyan)', opacity: 0.8
+    fontSize: '0.85rem', color: 'var(--accent-blue)', opacity: 0.8
   },
 
   // Sticky bottom responding area
@@ -797,12 +797,12 @@ const styles = {
     bottom: '1rem',
     left: '1rem',
     right: '1rem',
-    background: 'rgba(15, 23, 42, 0.95)',
+    background: 'rgba(255, 255, 255, 0.97)',
     backdropFilter: 'blur(16px)',
-    border: '1px solid var(--border-color)',
+    border: '1px solid #e5e7eb',
     borderRadius: '16px',
     padding: '0.9rem 1.25rem',
-    boxShadow: '0 -8px 24px rgba(0, 0, 0, 0.3)',
+    boxShadow: '0 -4px 16px rgba(0, 0, 0, 0.06)',
     zIndex: 5,
   },
   inputTitle: {
@@ -834,9 +834,9 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#ffffff',
+    background: '#f1f5f9',
+    border: '1px solid #e5e7eb',
+    color: '#111827',
     cursor: 'pointer',
   },
 
@@ -855,8 +855,8 @@ const styles = {
   // Summary Review Styles
   summaryCard: {
     padding: '1.25rem',
-    background: 'rgba(30, 41, 59, 0.4)',
-    border: '1px solid var(--border-color)',
+    background: '#f8fafc',
+    border: '1px solid #e5e7eb',
     borderRadius: '12px',
     marginTop: '1rem',
   },
@@ -866,18 +866,18 @@ const styles = {
     margin: '1.25rem 0'
   },
   summaryItem: {
-    background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-color)',
+    background: '#f9fafb', border: '1px solid #e5e7eb',
     padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)'
   },
   summaryLabel: {
-    fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600
+    fontSize: '0.8rem', color: '#6b7280', fontWeight: 600
   },
   summaryValue: {
     margin: 0, marginTop: '0.25rem', fontSize: '0.9rem', color: 'var(--text-primary)',
     wordBreak: 'break-word',
   },
   editInlineBtn: {
-    background: 'none', border: 'none', color: 'var(--accent-cyan)',
+    background: 'none', border: 'none', color: 'var(--accent-blue)',
     cursor: 'pointer', fontSize: '0.75rem'
   },
   summaryControls: {

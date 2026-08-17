@@ -74,41 +74,42 @@ const styles = {
   wrapper: {
     minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
     padding: 'var(--space-xl)', position: 'relative', overflow: 'hidden',
-    background: 'var(--bg-primary)',
+    background: '#f8f9fa',
   },
   bgOrb1: {
     position: 'absolute', width: 500, height: 500, borderRadius: '50%', top: '-10%', right: '-15%',
-    background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(22,163,74,0.06) 0%, transparent 70%)',
     animation: 'float 8s ease-in-out infinite',
   },
   bgOrb2: {
     position: 'absolute', width: 400, height: 400, borderRadius: '50%', bottom: '-10%', left: '-10%',
-    background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(37,99,235,0.04) 0%, transparent 70%)',
     animation: 'float 10s ease-in-out infinite reverse',
   },
   card: {
     width: '100%', maxWidth: 500, padding: 'var(--space-2xl)',
-    background: 'var(--bg-card)', backdropFilter: 'blur(16px)',
-    border: '1px solid var(--border-color)', borderRadius: 'var(--radius-xl)',
+    background: '#ffffff',
+    border: '1px solid #e5e7eb', borderRadius: 'var(--radius-xl)',
     textAlign: 'center', position: 'relative', zIndex: 2,
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
   },
   checkCircle: { marginBottom: 'var(--space-xl)' },
   title: {
     fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 700,
-    marginBottom: 'var(--space-md)', color: '#22c55e',
+    marginBottom: 'var(--space-md)', color: '#16a34a',
   },
   desc: {
-    color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.7,
+    color: '#4b5563', fontSize: '1rem', lineHeight: 1.7,
     marginBottom: 'var(--space-xl)',
   },
   infoBox: {
     display: 'flex', alignItems: 'flex-start', gap: 'var(--space-md)',
     padding: 'var(--space-lg)', borderRadius: 'var(--radius-md)',
-    background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.1)',
+    background: 'rgba(37,99,235,0.04)', border: '1px solid rgba(37,99,235,0.1)',
     textAlign: 'left', marginBottom: 'var(--space-xl)',
   },
-  infoTitle: { fontWeight: 600, marginBottom: '0.25rem', fontSize: '0.95rem' },
-  infoDesc: { color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 },
+  infoTitle: { fontWeight: 600, marginBottom: '0.25rem', fontSize: '0.95rem', color: '#111827' },
+  infoDesc: { color: '#6b7280', fontSize: '0.85rem', lineHeight: 1.6 },
   steps: {
     display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)',
     marginBottom: 'var(--space-xl)',
@@ -116,7 +117,7 @@ const styles = {
   step: {
     display: 'flex', alignItems: 'center', gap: 'var(--space-md)',
     padding: 'var(--space-sm) var(--space-md)',
-    borderRadius: 'var(--radius-sm)', background: 'var(--bg-glass)',
+    borderRadius: 'var(--radius-sm)', background: '#f9fafb',
   },
-  stepText: { color: 'var(--text-secondary)', fontSize: '0.9rem' },
+  stepText: { color: '#4b5563', fontSize: '0.9rem' },
 };

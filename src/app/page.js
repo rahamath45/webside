@@ -80,9 +80,9 @@ export default function LandingPage() {
               marginLeft: '0.75rem',
               padding: '4px 10px',
               borderRadius: '6px',
-              background: 'rgba(99,102,241,0.15)',
-              color: 'var(--accent-cyan)',
-              border: '1px solid rgba(99,102,241,0.3)',
+              background: 'rgba(79,70,229,0.08)',
+              color: 'var(--accent-indigo)',
+              border: '1px solid rgba(79,70,229,0.2)',
               verticalAlign: 'middle',
               fontWeight: 700,
               textTransform: 'uppercase',
@@ -119,7 +119,7 @@ export default function LandingPage() {
               </span>
               <span className="text-gradient">Indigenous Cybersecurity</span>
               <br />
-              <span style={{ color: 'var(--text-primary)' }}>Tools & Products</span>
+              <span style={{ color: '#111827' }}>Tools & Products</span>
             </h1>
             <p style={styles.heroDesc}>
               An initiative to identify, compile, showcase, and promote indigenous cybersecurity
@@ -255,15 +255,15 @@ export default function LandingPage() {
 const styles = {
   nav: {
     position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-    background: 'rgba(8, 11, 22, 0.9)', backdropFilter: 'blur(16px)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)', padding: '1.4rem 0',
+    background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(16px)',
+    borderBottom: '1px solid #e5e7eb', padding: '1.4rem 0',
   },
   navInner: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   navBrand: {
     fontFamily: 'var(--font-display)',
     fontSize: '1.85rem',
     fontWeight: 800,
-    color: '#ffffff',
+    color: '#111827',
     letterSpacing: '0.02em',
     cursor: 'pointer',
     display: 'flex',
@@ -276,12 +276,11 @@ const styles = {
     width: '100%',
     maxWidth: '860px',
     margin: '0 auto 2.5rem auto',
-    background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.45) 0%, rgba(30, 41, 59, 0.2) 100%)',
-    backdropFilter: 'blur(16px)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: '#ffffff',
+    border: '1px solid #e5e7eb',
     borderRadius: '24px',
     padding: '2rem 3rem',
-    boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
   },
   heroLogoWrapper: {
     flex: 1,
@@ -293,7 +292,7 @@ const styles = {
   heroDivider: {
     width: '1px',
     height: '50px',
-    background: 'rgba(255, 255, 255, 0.08)',
+    background: '#e5e7eb',
   },
   footerLogos: {
     display: 'flex',
@@ -308,27 +307,27 @@ const styles = {
   },
   hero: {
     position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center',
-    paddingTop: '80px', overflow: 'hidden',
+    paddingTop: '80px', overflow: 'hidden', background: '#ffffff',
   },
   heroBg: {
     position: 'absolute', inset: 0,
-    background: 'radial-gradient(ellipse 80% 60% at 50% 20%, rgba(59,130,246,0.08) 0%, transparent 60%)',
+    background: 'radial-gradient(ellipse 80% 60% at 50% 20%, rgba(37,99,235,0.04) 0%, transparent 60%)',
   },
   heroOrb1: {
     position: 'absolute', width: 500, height: 500, borderRadius: '50%', top: '-10%', right: '-10%',
-    background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(79,70,229,0.04) 0%, transparent 70%)',
     animation: 'float 8s ease-in-out infinite',
   },
   heroOrb2: {
     position: 'absolute', width: 400, height: 400, borderRadius: '50%', bottom: '10%', left: '-5%',
-    background: 'radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(8,145,178,0.04) 0%, transparent 70%)',
     animation: 'float 10s ease-in-out infinite reverse',
   },
   heroContent: { position: 'relative', zIndex: 2 },
   badge: {
     display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
     padding: '0.5rem 1.25rem', borderRadius: 'var(--radius-full)',
-    background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)',
+    background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.15)',
     color: 'var(--accent-blue)', fontSize: '0.85rem', fontWeight: 500, marginBottom: '1.5rem',
   },
   badgeDot: {
@@ -337,7 +336,7 @@ const styles = {
   },
   heroTitle: {
     fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 5vw, 3.8rem)',
-    fontWeight: 800, lineHeight: 1.15, marginBottom: '1.5rem',
+    fontWeight: 800, lineHeight: 1.15, marginBottom: '1.5rem', color: '#111827',
   },
   heroDesc: {
     fontSize: '1.15rem', color: 'var(--text-secondary)', maxWidth: 620,
@@ -366,26 +365,26 @@ const styles = {
   objIconWrap: {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     width: 72, height: 72, borderRadius: 'var(--radius-lg)', margin: '0 auto var(--space-md)',
-    background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.1)',
+    background: 'rgba(37,99,235,0.04)', border: '1px solid #e5e7eb',
   },
-  objTitle: { fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700, marginBottom: 'var(--space-sm)' },
+  objTitle: { fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700, marginBottom: 'var(--space-sm)', color: '#111827' },
   objDesc: { color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 },
   catGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 'var(--space-md)' },
   catCard: { padding: 'var(--space-lg)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' },
   catIconWrap: {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     width: 56, height: 56, borderRadius: 'var(--radius-md)',
-    background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)',
+    background: '#f8fafc', border: '1px solid #e5e7eb',
   },
-  catName: { fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-primary)' },
+  catName: { fontSize: '0.9rem', fontWeight: 500, color: '#111827' },
   ctaCard: {
     padding: 'var(--space-3xl) var(--space-xl)',
-    background: 'linear-gradient(135deg, rgba(59,130,246,0.06), rgba(99,102,241,0.03))',
-    border: '1px solid rgba(59,130,246,0.1)',
+    background: 'linear-gradient(135deg, rgba(37,99,235,0.04), rgba(79,70,229,0.02))',
+    border: '1px solid #e5e7eb',
   },
   footer: {
-    borderTop: '1px solid var(--border-color)', padding: 'var(--space-xl) 0',
-    background: 'var(--bg-primary)',
+    borderTop: '1px solid #e5e7eb', padding: 'var(--space-xl) 0',
+    background: '#ffffff',
   },
   footerInner: {
     display: 'flex',
