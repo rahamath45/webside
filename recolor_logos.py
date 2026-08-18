@@ -40,7 +40,7 @@ def main():
         os.path.join(logos_dir, "ican-logo.png")
     )
     process_logo(
-        os.path.join(logos_dir, "itel-logo-original.png"),
+        os.path.join(logos_dir, "itel-logo-cropped.png"),
         os.path.join(logos_dir, "itel-logo.png")
     )
 

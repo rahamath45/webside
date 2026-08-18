@@ -101,12 +101,18 @@ export default function LandingPage() {
         <div className="container" style={styles.heroContent}>
           <div className="animate-fade-in-up" style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
             <div style={styles.heroLogos}>
-              <div style={styles.heroLogoWrapper}>
-                <img src="/logos/certin-logo-original.png" alt="CERT-In" style={{ height: '48px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+              <div style={{ ...styles.heroLogoWrapper, flexDirection: 'column', gap: '4px' }}>
+                <img src="/logos/certin-logo-cropped.png" alt="CERT-In" style={{ height: '48px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0284c7', lineHeight: 1.2, textAlign: 'center' }}>
+                  Enhancing Cyber Security in India
+                </div>
               </div>
               <div style={styles.heroDivider} />
-              <div style={styles.heroLogoWrapper}>
-                <img src="/logos/itel-logo-new.png" alt="ITEL" style={{ height: '66px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+              <div style={{ ...styles.heroLogoWrapper, flexDirection: 'column', gap: '4px' }}>
+                <img src="/logos/itel-logo-cropped.png" alt="ITEL" style={{ height: '58px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#374151', lineHeight: 1.2, textAlign: 'center' }}>
+                  Immersive Technology<br/>Entrepreneurship Labs
+                </div>
               </div>
             </div>
             <div style={styles.badge}>
@@ -240,8 +246,18 @@ export default function LandingPage() {
       <footer style={styles.footer}>
         <div className="container" style={styles.footerInner}>
           <div style={styles.footerLogos}>
-            <img src="/logos/certin-logo.png" alt="CERT-In" style={{ ...styles.footerLogoImg, height: '44px' }} />
-            <img src="/logos/itel-logo.png" alt="ITEL" style={{ ...styles.footerLogoImg, height: '54px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+              <img src="/logos/certin-logo-cropped.png" alt="CERT-In" style={{ ...styles.footerLogoImg, height: '38px', mixBlendMode: 'multiply' }} />
+              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#0284c7', lineHeight: 1.2, textAlign: 'center' }}>
+                Enhancing Cyber Security in India
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+              <img src="/logos/itel-logo-cropped.png" alt="ITEL" style={{ ...styles.footerLogoImg, height: '44px', mixBlendMode: 'multiply' }} />
+              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#374151', lineHeight: 1.2, textAlign: 'center' }}>
+                Immersive Technology<br/>Entrepreneurship Labs
+              </div>
+            </div>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>
             © {new Date().getFullYear()} CERT-In & ICAN Joint Initiative. All rights reserved.
