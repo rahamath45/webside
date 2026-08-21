@@ -37,18 +37,18 @@ export async function generatePDF(data) {
       const logoWidth = 150;
       const gap = 15;
       const totalWidth = (logoWidth * 2) + gap;
-      const startX = (doc.page.width - totalWidth) / 2;
+      const logosStartX = (doc.page.width - totalWidth) / 2;
       const yPos = doc.y;
 
       if (fs.existsSync(certinLogo)) {
         try {
-          doc.image(certinLogo, startX, yPos, { fit: [logoWidth, logoHeight], align: 'center', valign: 'center' });
+          doc.image(certinLogo, logosStartX, yPos, { fit: [logoWidth, logoHeight], align: 'center', valign: 'center' });
         } catch { }
       }
 
       if (fs.existsSync(itelLogo)) {
         try {
-          doc.image(itelLogo, startX + logoWidth + gap, yPos, { fit: [logoWidth, logoHeight], align: 'center', valign: 'center' });
+          doc.image(itelLogo, logosStartX + logoWidth + gap, yPos, { fit: [logoWidth, logoHeight], align: 'center', valign: 'center' });
         } catch { }
       }
 
