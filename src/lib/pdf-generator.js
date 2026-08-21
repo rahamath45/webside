@@ -34,16 +34,21 @@ export async function generatePDF(data) {
       const certinLogo = path.join(logosDir, 'certin-logo.png');
       const itelLogo = path.join(logosDir, 'itel-logo.png');
       const logoHeight = 40;
+      const logoWidth = 150;
+      const gap = 15;
+      const totalWidth = (logoWidth * 2) + gap;
+      const startX = (doc.page.width - totalWidth) / 2;
+      const yPos = doc.y;
 
       if (fs.existsSync(certinLogo)) {
         try {
-          doc.image(certinLogo, doc.page.margins.left, doc.y, { fit: [160, logoHeight] });
+          doc.image(certinLogo, startX, yPos, { fit: [logoWidth, logoHeight], align: 'center', valign: 'center' });
         } catch { }
       }
 
       if (fs.existsSync(itelLogo)) {
         try {
-          doc.image(itelLogo, doc.page.margins.left + 180, doc.y, { fit: [160, logoHeight] });
+          doc.image(itelLogo, startX + logoWidth + gap, yPos, { fit: [logoWidth, logoHeight], align: 'center', valign: 'center' });
         } catch { }
       }
 
