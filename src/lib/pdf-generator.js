@@ -32,15 +32,15 @@ export async function generatePDF(data) {
       // ── Header with logos ──
       const logosDir = path.join(process.cwd(), 'public', 'logos');
       const logoFiles = ['certin-logo.png', 'ican-logo.png', 'itel-logo.png'];
-      const logoHeight = 36;
+      const logoHeight = 40;
       let logoX = doc.page.margins.left;
 
       for (const file of logoFiles) {
         const logoPath = path.join(logosDir, file);
         if (fs.existsSync(logoPath)) {
           try {
-            doc.image(logoPath, logoX, doc.y, { height: logoHeight });
-            logoX += 120;
+            doc.image(logoPath, logoX, doc.y, { fit: [160, logoHeight] });
+            logoX += 170;
           } catch {
             // Skip if logo can't be loaded
           }
@@ -122,12 +122,12 @@ export async function generatePDF(data) {
 
       // ── Table Rows ──
       const rows = [
-        ['1', 'Email', data.email || ''],
-        ['2', 'Organization Name', data.organizationName || ''],
-        ['3', 'Contact Person Name', data.contactPersonName || ''],
-        ['4', 'Email', data.contactEmail || ''],
-        ['5', 'Product / Tool Name', data.productName || ''],
-        ['6', 'Product Category', data.productCategory || ''],
+        ['1', 'Organization Name', data.organizationName || ''],
+        ['2', 'Contact Person Name', data.contactPersonName || ''],
+        ['3', 'Contact Email Address', data.contactEmail || ''],
+        ['4', 'Product / Tool Name', data.productName || ''],
+        ['5', 'Product Category', Array.isArray(data.productCategory) ? data.productCategory.join(', ') : (data.productCategory || '')],
+        ['6', 'Specify Product Category (If Other)', data.productCategoryOther || 'N/A'],
         ['7', 'Deployment Model', data.deploymentModel || ''],
         ['8', 'Brief Description of the Product (Max 200 Words)', data.briefDescription || ''],
         ['9', 'Key Features and Capabilities', data.keyFeatures || ''],
@@ -135,11 +135,11 @@ export async function generatePDF(data) {
         ['11', 'Details of Intellectual Property Ownership', data.ipOwnership || ''],
         ['12', 'Details of Foreign-Origin Components (if any)', data.foreignComponents || ''],
         ['13', 'Software Bill of Materials (SBOM) Availability', data.sbomAvailability || ''],
-        ['14', 'If Available, SBOM Format', data.sbomFormat || ''],
+        ['14', 'If Available, SBOM Format', data.sbomFormat || 'N/A'],
         ['15', 'Availability for Demonstration and PoC', data.pocAvailability || ''],
-        ['16', 'Awards, Recognitions, or Certifications Received', data.awards || ''],
-        ['17', 'Product Benchmarking & References', data.benchmarking || ''],
-        ['18', 'Existing Deployments / Installations', data.deployments || ''],
+        ['16', 'Awards, Recognitions, or Certifications Received', data.awards || 'N/A'],
+        ['17', 'Product Benchmarking & References', data.benchmarking || 'N/A'],
+        ['18', 'Existing Deployments / Installations', data.deployments || 'N/A'],
         ['19', 'AI-Assisted VA & Source Code Assessment', data.aiAssessment || ''],
         ['20', 'Responsible Vulnerability Disclosure (RVD) Policy', data.rvdPolicy || ''],
       ];

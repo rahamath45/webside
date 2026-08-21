@@ -4,14 +4,7 @@ import { useRouter } from 'next/navigation';
 import { getSession, signOut } from 'next-auth/react';
 
 const QUESTIONS = [
-  {
-    id: 'email',
-    question: 'Registered Email Address',
-    description: 'This is the email address of the account submitting the application.',
-    placeholder: 'your@email.com',
-    type: 'email',
-    required: true,
-  },
+
   {
     id: 'organizationName',
     question: 'Organization Name',
@@ -48,7 +41,7 @@ const QUESTIONS = [
     id: 'productCategory',
     question: 'Product Category',
     description: 'Select the category that best matches your product\'s primary function.',
-    type: 'select',
+    type: 'multi-select',
     options: [
       'Endpoint Security',
       'Firewall & UTM',
@@ -67,18 +60,18 @@ const QUESTIONS = [
       'Blockchain Security',
       'Data Protection & DLP',
       'Supply Chain Security',
-      'Others \u2013 Not Listed',
+      'Others - Not Listed',
     ],
     required: true,
   },
   {
     id: 'productCategoryOther',
     question: 'Specify Product Category',
-    description: 'Please specify the product category since you selected \"Others \u2013 Not Listed\".',
+    description: 'Please specify the product category since you selected "Others - Not Listed".',
     placeholder: 'e.g. Quantum-Safe Cryptography',
     type: 'text',
     required: true,
-    dependsOn: { field: 'productCategory', value: 'Others \u2013 Not Listed' },
+    dependsOn: { field: 'productCategory', value: 'Others - Not Listed', operator: 'includes' },
   },
   {
     id: 'deploymentModel',
@@ -266,6 +259,10 @@ export default function ApplyPage() {
   // Check if current question's dependency is met
   const isQuestionVisible = (q) => {
     if (!q.dependsOn) return true;
+    if (q.dependsOn.operator === 'includes') {
+      const val = answers[q.dependsOn.field];
+      return Array.isArray(val) && val.includes(q.dependsOn.value);
+    }
     return answers[q.dependsOn.field] === q.dependsOn.value;
   };
 
@@ -435,7 +432,9 @@ export default function ApplyPage() {
                       <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Your Answer</span>
                       <span style={styles.editIndicator}>Edit ✎</span>
                     </div>
-                    <p style={styles.userBubbleText}>{answers[q.id].toString()}</p>
+                    <p style={styles.userBubbleText}>
+                      {Array.isArray(answers[q.id]) ? answers[q.id].join(', ') : answers[q.id].toString()}
+                    </p>
                   </div>
                 )}
               </div>
@@ -471,7 +470,7 @@ export default function ApplyPage() {
                           Edit ✎
                         </button>
                       </div>
-                      <p style={styles.summaryValue}>{val ? val.toString() : <span style={{ color: '#ef4444' }}>Empty / Required</span>}</p>
+                      <p style={styles.summaryValue}>{val ? (Array.isArray(val) ? val.join(', ') : val.toString()) : <span style={{ color: '#ef4444' }}>Empty / Required</span>}</p>
                     </div>
                   );
                 })}
@@ -564,6 +563,39 @@ export default function ApplyPage() {
                   </select>
                 )}
 
+                {currentQuestion.type === 'multi-select' && (
+                  <div style={styles.multiSelectGroup}>
+                    {currentQuestion.options.map(opt => {
+                      const selected = Array.isArray(answers[currentQuestion.id]) && answers[currentQuestion.id].includes(opt);
+                      return (
+                        <label key={opt} style={{
+                          ...styles.radioOption,
+                          borderColor: selected ? 'var(--accent-blue)' : '#e5e7eb',
+                          background: selected ? 'rgba(37,99,235,0.06)' : '#f9fafb',
+                        }}>
+                          <input
+                            type="checkbox"
+                            name={currentQuestion.id}
+                            value={opt}
+                            checked={selected}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              const currentArr = Array.isArray(answers[currentQuestion.id]) ? answers[currentQuestion.id] : [];
+                              if (checked) {
+                                handleInputChange([...currentArr, opt]);
+                              } else {
+                                handleInputChange(currentArr.filter(item => item !== opt));
+                              }
+                            }}
+                            style={{ accentColor: 'var(--accent-blue)', marginRight: '8px' }}
+                          />
+                          <span>{opt}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+
                 {currentQuestion.type === 'textarea' && (
                   <div>
                     <textarea
@@ -597,7 +629,7 @@ export default function ApplyPage() {
                           value={opt}
                           checked={answers[currentQuestion.id] === opt}
                           onChange={() => handleInputChange(opt)}
-                          style={{ accentColor: 'var(--accent-blue)' }}
+                          style={{ accentColor: 'var(--accent-blue)', marginRight: '8px' }}
                         />
                         <span>{opt}</span>
                       </label>
@@ -842,6 +874,10 @@ const styles = {
 
   radioGroup: {
     display: 'flex', flexDirection: 'row', gap: '0.75rem', flexWrap: 'wrap'
+  },
+  multiSelectGroup: {
+    display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem',
+    maxHeight: '200px', overflowY: 'auto', padding: '4px'
   },
   radioOption: {
     display: 'flex', alignItems: 'center', gap: '0.5rem',
