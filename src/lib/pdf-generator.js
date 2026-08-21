@@ -31,20 +31,20 @@ export async function generatePDF(data) {
 
       // ── Header with logos ──
       const logosDir = path.join(process.cwd(), 'public', 'logos');
-      const logoFiles = ['certin-logo.png', 'ican-logo.png', 'itel-logo.png'];
+      const certinLogo = path.join(logosDir, 'certin-logo.png');
+      const itelLogo = path.join(logosDir, 'itel-logo.png');
       const logoHeight = 40;
-      let logoX = doc.page.margins.left;
 
-      for (const file of logoFiles) {
-        const logoPath = path.join(logosDir, file);
-        if (fs.existsSync(logoPath)) {
-          try {
-            doc.image(logoPath, logoX, doc.y, { fit: [160, logoHeight] });
-            logoX += 170;
-          } catch {
-            // Skip if logo can't be loaded
-          }
-        }
+      if (fs.existsSync(certinLogo)) {
+        try {
+          doc.image(certinLogo, doc.page.margins.left, doc.y, { fit: [200, logoHeight] });
+        } catch { }
+      }
+
+      if (fs.existsSync(itelLogo)) {
+        try {
+          doc.image(itelLogo, doc.page.margins.left, doc.y, { fit: [pageWidth, logoHeight], align: 'right' });
+        } catch { }
       }
 
       doc.moveDown(3.5);
@@ -134,14 +134,14 @@ export async function generatePDF(data) {
         ['10', 'Percentage of Indigenous Content (%)', data.indigenousContent || ''],
         ['11', 'Details of Intellectual Property Ownership', data.ipOwnership || ''],
         ['12', 'Details of Foreign-Origin Components (if any)', data.foreignComponents || ''],
-        ['13', 'Software Bill of Materials (SBOM) Availability', data.sbomAvailability || ''],
+        ['13', 'Software Bill of Materials (SBOM) Availability', typeof data.sbomAvailability === 'boolean' ? (data.sbomAvailability ? 'Yes' : 'No') : ''],
         ['14', 'If Available, SBOM Format', data.sbomFormat || 'N/A'],
-        ['15', 'Availability for Demonstration and PoC', data.pocAvailability || ''],
+        ['15', 'Availability for Demonstration and PoC', typeof data.pocAvailability === 'boolean' ? (data.pocAvailability ? 'Yes' : 'No') : ''],
         ['16', 'Awards, Recognitions, or Certifications Received', data.awards || 'N/A'],
         ['17', 'Product Benchmarking & References', data.benchmarking || 'N/A'],
         ['18', 'Existing Deployments / Installations', data.deployments || 'N/A'],
         ['19', 'AI-Assisted VA & Source Code Assessment', data.aiAssessment || ''],
-        ['20', 'Responsible Vulnerability Disclosure (RVD) Policy', data.rvdPolicy || ''],
+        ['20', 'Responsible Vulnerability Disclosure (RVD) Policy', typeof data.rvdPolicy === 'boolean' ? (data.rvdPolicy ? 'Yes' : 'No') : ''],
       ];
 
       for (let i = 0; i < rows.length; i++) {
