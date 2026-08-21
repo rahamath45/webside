@@ -330,10 +330,15 @@ export default function ApplyPage() {
     setSubmitError('');
 
     try {
+      const payload = { ...answers };
+      if (Array.isArray(payload.productCategory)) {
+        payload.productCategory = payload.productCategory.join(', ');
+      }
+
       const response = await fetch('/api/submit-application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(answers),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();

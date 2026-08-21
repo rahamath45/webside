@@ -141,10 +141,9 @@ export async function POST(request) {
     submissionLocks.set(lockKey, true);
 
     // 3. Map fields to report data (using sanitized values — Finding 7)
-    // Merge custom category into productCategory when "Others" is selected
     let finalProductCategory = sanitizedPayload.productCategory;
-    if (sanitizedPayload.productCategory === 'Others \u2013 Not Listed' && sanitizedPayload.productCategoryOther) {
-      finalProductCategory = `Others \u2013 ${sanitizedPayload.productCategoryOther}`;
+    if (sanitizedPayload.productCategory && sanitizedPayload.productCategory.includes('Others - Not Listed') && sanitizedPayload.productCategoryOther) {
+      finalProductCategory = finalProductCategory.replace('Others - Not Listed', `Others - ${sanitizedPayload.productCategoryOther}`);
     }
 
     // Convert Yes/No strings to booleans for BOOLEAN columns
