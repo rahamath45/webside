@@ -37,13 +37,13 @@ export async function generatePDF(data) {
 
       if (fs.existsSync(certinLogo)) {
         try {
-          doc.image(certinLogo, doc.page.margins.left, doc.y, { fit: [200, logoHeight] });
+          doc.image(certinLogo, doc.page.margins.left, doc.y, { fit: [160, logoHeight] });
         } catch { }
       }
 
       if (fs.existsSync(itelLogo)) {
         try {
-          doc.image(itelLogo, doc.page.margins.left, doc.y, { fit: [pageWidth, logoHeight], align: 'right' });
+          doc.image(itelLogo, doc.page.margins.left + 180, doc.y, { fit: [160, logoHeight] });
         } catch { }
       }
 
